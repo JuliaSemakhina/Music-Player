@@ -1,115 +1,29 @@
-const draggable_list = document.getElementById('draggable-list');
-const check = document.getElementById('check');
+const musicContainer = document.getElementById('music_container');
 
-const largestCountry = [
-	'Russia',
-	'Canada',
-	'United States',
-	'China',
-	'Brazil',
-	'Australia',
-	'India',
-	'Argentina',
-	'Kazakhstan',
-	'Algeria'
-];
+const playBtn = document.getElementById('play');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
 
-//Store List Items
-const listItems = [];
+const audio = document.getElementById('audio');
+const progress = document.getElementById('progress');
+const progressContainer = document.getElementById('progress_container');
+const title = document.getElementById('title');
+const cover = document.getElementById('cover');
 
-let dragStartIndex;
+//Song titles
+const songs = ['Crank_it_Up', 'Beep_Beep_Song'];
 
-createList();
+//Keep track of songs
+let songIndex = 1;
 
-//Insert list items into DOM
+//Initially load song details into DOM
 
-function createList() {
-	[...largestCountry]
-	.map(a => ({ value: a, sort: Math.random()}))
-	.sort((a,b)=> a.sort - b.sort)
-	.map(a=> a.value)
-	.forEach((country, index)=> {
-		console.log(country);
+loadSong(songs[songIndex]);
 
-		const listItem= document.createElement('li');
+//Update song details
 
-		listItem.setAttribute('data-index', index);
-
-		listItem.innerHTML = `   
-			<span class="number">${index + 1}</span>
-			<div class="draggable" draggable="true">
-			<p class="country-name">${country}</p>
-			<i class='fas fa-grip-lines'></i>
-			</div>
-		`;
-		listItems.push(listItem);
-		draggable_list.appendChild(listItem);
-	});
-
-	addeventListeners();
+function loadSong(song) {
+	title.innerText = song;
+	audio.src = `music/${song}.mp3`;
+	cover.src = `images/${song}.jpg`;
 }
-
-function dragStart(){
-	dragStartIndex = +this.closest('li').getAttribute('data-index');
-}
-
-function dragEnter(){
-	this.classList.add('over');
-}
-
-function dragOver(e){
-	e.preventDefault();
-}
-
-function dragLeave(){
-	this.classList.remove('over');
-}
-
-function dragDrop(){
-	const dragEndIndex = +this.getAttribute('data-index');
-	swapItems(dragStartIndex, dragEndIndex);
-	this.classList.remove('over');
-	console.log(dragEndIndex);
-}
-
-
-//Swap list items
-function swapItems(fromIndex, toIndex){
-	const itemOne = listItems[fromIndex].querySelector('.draggable');
-	const itemTwo = listItems[toIndex].querySelector('.draggable');
-	listItems[fromIndex].appendChild(itemTwo);
-	listItems[toIndex].appendChild(itemOne);
-}
-
-
-//Check the order of the list items on button click
-function checkOrder() {
-	listItems.forEach((listItem,index)=> {
-		const countryName = listItem.querySelector('.draggable').innerText.trim();
-		if(countryName !== largestCountry[index]){
-			listItem.classList.add('wrong');
-		} else {
-			listItem.classList.remove('wrong');
-			listItem.classList.add('right');
-		}
-	})
-}
-
-
-function addeventListeners(){
-	const draggables = document.querySelectorAll('.draggable');
-	const dragListItems = document.querySelectorAll('.draggable-list li');
-
-	draggables.forEach(draggable=> {
-		draggable.addEventListener('dragstart', dragStart)
-		});
-
-	dragListItems.forEach(item=> {
-		item.addEventListener('dragover', dragOver)
-		item.addEventListener('drop', dragDrop)
-		item.addEventListener('dragenter', dragEnter)
-		item.addEventListener('dragleave', dragLeave);
-});
-}
-
-check.addEventListener('click', checkOrder);
